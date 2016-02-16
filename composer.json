@@ -1,0 +1,29 @@
+{
+  "name": "nordsoftware/lumen-dynamodb",
+  "description": "DynamoDB module for Lumen framework. Based on https://github.com/baopham/laravel-dynamodb",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kenneth Söderlund",
+      "email": "kenneth.soderlund@nordsoftware.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "aws/aws-sdk-php": "^3.0.0",
+    "illuminate/support": "~5.2",
+    "illuminate/database": "~5.2",
+    "vlucas/phpdotenv": "~2.2"
+  },
+  "require-dev": {
+    "laravel/lumen-framework": "~5.2"
+  },
+  "suggests": [
+    "nordsoftware/lumen-core"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Nord\\Lumen\\DynamoDb\\": "src"
+    }
+  }
+}
