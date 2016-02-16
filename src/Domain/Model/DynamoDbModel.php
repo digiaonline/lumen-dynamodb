@@ -84,16 +84,16 @@ abstract class DynamoDbModel extends Model
      * Class constructor.
      *
      * @param array                      $attributes The attributes to set.
-     * @param DynamoDbClientService|null $dynamoDb   The client service.
+     * @param DynamoDbClientInterface|null $dynamoDb   The client service.
      */
-    public function __construct(array $attributes = [], DynamoDbClientService $dynamoDb = null)
+    public function __construct(array $attributes = [], DynamoDbClientInterface $dynamoDb = null)
     {
         parent::__construct($attributes);
 
         // Initialize the client.
         if (static::$dynamoDb === null) {
             if ($dynamoDb === null) {
-                static::$dynamoDb = App::make('Nord\Lumen\DynamoDb\DynamoDbClientService');
+                static::$dynamoDb = App::make('Nord\Lumen\DynamoDb\Contracts\DynamoDbClientInterface');
             } else {
                 static::$dynamoDb = $dynamoDb;
             }
