@@ -1,6 +1,6 @@
 # lumen-dynamodb
 
-Support for saving, updating and finding models to/from DynamoDB.
+Lumen implementation for DynamoDB, based on [Bao Pham's laravel-dynamodb](https://github.com/baopham/laravel-dynamodb).
 
 # Installation and usage
 
@@ -14,3 +14,6 @@ You can use the DynamoDB artisan command to manage the DynamoDB at the moment:
     php artisan dynamodb --describe --tableName=<TABLE_NAME> # To describe a table
     php artisan dynamodb --delete --tableName=<TABLE_NAME> # To delete a table
 
+
+# Licence
+MIT

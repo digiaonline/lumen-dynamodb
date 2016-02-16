@@ -27,6 +27,15 @@ abstract class DynamoDbModel extends Model
 {
 
     /**
+     * @var string DIRECTION_ASC Sort ascending.
+     */
+    const DIRECTION_ASC = 'asc';
+    /**
+     * @var string DIRECTION_DESC Sort descending.
+     */
+    const DIRECTION_DESC = 'desc';
+
+    /**
      * Always set this to false since DynamoDb does not support incremental Id.
      *
      * @var bool $incrementing
@@ -62,6 +71,15 @@ abstract class DynamoDbModel extends Model
     protected $where = [];
 
     /**
+     * Sort query results ascending or descending.
+     *
+     * Default ascending.
+     *
+     * @var bool $scanIndexForward
+     */
+    protected $scanIndexForward = true;
+
+    /**
      * Indexes.
      *
      * [
@@ -83,7 +101,7 @@ abstract class DynamoDbModel extends Model
     /**
      * Class constructor.
      *
-     * @param array                      $attributes The attributes to set.
+     * @param array                        $attributes The attributes to set.
      * @param DynamoDbClientInterface|null $dynamoDb   The client service.
      */
     public function __construct(array $attributes = [], DynamoDbClientInterface $dynamoDb = null)
@@ -311,6 +329,20 @@ abstract class DynamoDbModel extends Model
     }
 
     /**
+     * Set the sort order for the current search query.
+     *
+     * @param string $direction The direction to sort.
+     */
+    public function sort($direction)
+    {
+        if (strtolower($direction) === self::DIRECTION_DESC) {
+            $this->scanIndexForward = false;
+        } else {
+            $this->scanIndexForward = true;
+        }
+    }
+
+    /**
      * Gets all values for given columns.
      *
      * @param array $columns The columns to get.
@@ -356,6 +388,10 @@ abstract class DynamoDbModel extends Model
             }
             $query['ScanFilter'] = $this->where;
         }
+
+        // Sorting.
+        $query['ScanIndexForward'] = $this->scanIndexForward;
+
         $iterator = $this->client->getIterator($op, $query);
         $results  = [];
         foreach ($iterator as $item) {
