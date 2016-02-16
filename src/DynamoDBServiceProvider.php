@@ -24,7 +24,7 @@ class DynamoDBServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('App\DynamoDb\DynamoDbClientInterface', function ($app) {
+        $this->app->singleton('Nord\Lumen\DynamoDb\Contracts\DynamoDbClientInterface', function ($app) {
             $config = [
                 'credentials' => [
                     'key'    => config('services.dynamodb.key'),
