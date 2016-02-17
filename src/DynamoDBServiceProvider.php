@@ -35,7 +35,7 @@ class DynamoDBServiceProvider extends ServiceProvider
             ];
 
             // Set endpoint if local environment.
-            if (env('APP_ENV') === 'local') {
+            if (env('APP_ENV') === 'local' || env('APP_ENV') === 'testing') {
                 $config['endpoint'] = config('services.dynamodb.endpoint');
             }
 
