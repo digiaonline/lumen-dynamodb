@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Nord\Lumen\DynamoDb\ComparisonOperator;
 use Nord\Lumen\DynamoDb\Contracts\DynamoDbClientInterface;
 use Nord\Lumen\DynamoDb\DynamoDbClientService;
+use Nord\Lumen\DynamoDb\Exceptions\CompositeKeyNotFoundException;
 use Nord\Lumen\DynamoDb\Exceptions\NotSupportedException;
 
 /**
@@ -94,6 +95,11 @@ abstract class DynamoDbModel extends Model
     /**
      * Composite key.
      *
+     * [
+     *      'composite_key_1',
+     *      'composite_key_2',
+     * ].
+     *
      * @var array $compositeKey List of composite keys.
      */
     protected $compositeKey = [];
@@ -131,12 +137,37 @@ abstract class DynamoDbModel extends Model
     }
 
     /**
-     * Set up the DynamoDb.
+     * Set the client and marshaler from the DynamoDB instance.
      */
     protected function setupDynamoDb()
     {
         $this->client    = static::$dynamoDb->getClient();
         $this->marshaler = static::$dynamoDb->getMarshaler();
+    }
+
+    /**
+     * Set the primary (or composite) key of the model.
+     *
+     * If the parameter $id is an array, assume we are setting the composite key
+     * for this model. If the parameter $id is a string or integer, assume we are setting the
+     * primary key for this model.
+     *
+     * @param int|string|array $id
+     *
+     * @throws CompositeKeyNotFoundException
+     */
+    public function setId($id)
+    {
+        if (is_array($id)) {
+            foreach ($this->compositeKey as $key) {
+                if ( ! isset( $id[$key] )) {
+                    throw new CompositeKeyNotFoundException;
+                }
+                $this->setAttribute($key, $id[$key]);
+            }
+        } else {
+            $this->setAttribute($this->getKeyName(), $id);
+        }
     }
 
     /**
