@@ -159,11 +159,15 @@ abstract class DynamoDbModel extends Model
     public function setId($id)
     {
         if (is_array($id)) {
-            foreach ($this->compositeKey as $key) {
-                if ( ! isset( $id[$key] )) {
-                    throw new CompositeKeyNotFoundException;
+            if (isset($this->compositeKey) && ! empty($this->compositeKey)) {
+                foreach ($this->compositeKey as $key) {
+                    if ( ! isset( $id[$key] )) {
+                        throw new CompositeKeyNotFoundException;
+                    }
+                    $this->setAttribute($key, $id[$key]);
                 }
-                $this->setAttribute($key, $id[$key]);
+            } else {
+                $this->setAttribute($this->getKeyName(), $id[$this->getKeyName()]);
             }
         } else {
             $this->setAttribute($this->getKeyName(), $id);
@@ -255,17 +259,8 @@ abstract class DynamoDbModel extends Model
         }
         $item = $model->unmarshalItem($item);
         $model->fill($item);
-        if (is_array($id)) {
-            if (isset( $model->compositeKey ) && ! empty( $model->compositeKey )) {
-                foreach ($model->compositeKey as $var) {
-                    $model->$var = $id[$var];
-                }
-            } else {
-                $model->id = $id[$model->primaryKey];
-            }
-        } else {
-            $model->id = $id;
-        }
+        // Set the model id field.
+        $model->setId($id);
 
         return $model;
     }
