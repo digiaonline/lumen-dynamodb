@@ -159,7 +159,7 @@ abstract class DynamoDbModel extends Model
     public function setId($id)
     {
         if (is_array($id)) {
-            if (isset($this->compositeKey) && ! empty($this->compositeKey)) {
+            if (isset( $this->compositeKey ) && ! empty( $this->compositeKey )) {
                 foreach ($this->compositeKey as $key) {
                     if ( ! isset( $id[$key] )) {
                         throw new CompositeKeyNotFoundException;
@@ -296,11 +296,12 @@ abstract class DynamoDbModel extends Model
     }
 
     /**
+     * Static where function, adds where conditions to the model.
      *
-     * @param string $column
-     * @param null   $operator
-     * @param null   $value
-     * @param string $boolean
+     * @param string|array $column
+     * @param string|null  $operator
+     * @param string|null  $value
+     * @param string       $boolean
      *
      * @return DynamoDbModel
      * @throws NotSupportedException
@@ -316,9 +317,34 @@ abstract class DynamoDbModel extends Model
         // received when the method was called and pass it into the nested where.
         if (is_array($column)) {
             foreach ($column as $key => $value) {
-                return $model->where($key, '=', $value);
+                $model->addWhere($key, '=', $value, $boolean);
             }
+
+            return $model;
         }
+
+        $model->addWhere($column, $operator, $value, $boolean);
+
+        return $model;
+    }
+
+    /**
+     * Add a where condition.
+     *
+     * @param string      $column
+     * @param string|null $operator
+     * @param string|null $value
+     * @param string      $boolean
+     *
+     * @return $this|DynamoDbModel
+     * @throws NotSupportedException
+     */
+    public function addWhere($column, $operator = null, $value = null, $boolean = 'and')
+    {
+        if ($boolean !== 'and') {
+            throw new NotSupportedException('Only support "and" in where clause');
+        }
+
         // Here we will make some assumptions about the operator. If only 2 values are
         // passed to the method, we will assume that the operator is an equals sign
         // and keep going. Otherwise, we'll require the operator to be passed in.
@@ -343,15 +369,16 @@ abstract class DynamoDbModel extends Model
         if ($value instanceof Closure) {
             throw new NotSupportedException('Closure in where clause is not supported');
         }
-        $attributeValueList    = $model->marshalItem([
+        $attributeValueList = $this->marshalItem([
             'AttributeValueList' => $value,
         ]);
-        $model->where[$column] = [
+
+        $this->where[$column] = [
             'AttributeValueList' => [$attributeValueList['AttributeValueList']],
             'ComparisonOperator' => ComparisonOperator::getDynamoDbOperator($operator),
         ];
 
-        return $model;
+        return $this;
     }
 
     /**
