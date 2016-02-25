@@ -19,7 +19,11 @@
     "laravel/lumen-framework": "~5.2"
   },
   "suggests": [
-    "nordsoftware/lumen-core"
+    "nordsoftware/lumen-core",
+    "nordsoftware/lumen-oauth2",
+    "nordsoftware/lumen-oauth2-dynamodb",
+    "nordsoftware/lumen-file-manager",
+    "nordsoftware/lumen-file-manager-dynamodb"
   ],
   "autoload": {
     "psr-4": {
