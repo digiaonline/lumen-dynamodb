@@ -10,12 +10,57 @@ When DynamoDB is set up, start it with `java -Djava.library.path=./DynamoDBLocal
 
 You can use the DynamoDB artisan command to manage the DynamoDB at the moment:
 
-    php artisan dynamodb --create --tableName=<TABLE_NAME> # To create a table
-    php artisan dynamodb --describe --tableName=<TABLE_NAME> # To describe a table
-    php artisan dynamodb --delete --tableName=<TABLE_NAME> # To delete a table
+    php artisan dynamodb:create --config=<TABLE_CONFIGURATION> # To create tables
+    php artisan dynamodb:delete --config=<TABLE_CONFIGURATION> -y # To delete tables
 
-If you want to create more tables in one run, you can always override the Nord\Lumen\DynamoDb\Console\DynamoDbCommand and
-create multiple tables in the createTable function. 
+The table configuration file should return an array of table configurations:
+
+    return [
+        [
+            'TableName'             => 'users',
+            'AttributeDefinitions'  => [
+                [
+                    'AttributeName' => 'id',
+                    'AttributeType' => 'S',
+                ],
+            ],
+            'KeySchema'             => [
+                [
+                    'AttributeName' => 'id',
+                    'KeyType'       => 'HASH',
+                ],
+            ],
+            'ProvisionedThroughput' => [
+                'ReadCapacityUnits'  => 10,
+                'WriteCapacityUnits' => 20,
+                'OnDemand'           => false,
+            ],
+        ],
+        [
+            'TableName'             => 'orders',
+            'AttributeDefinitions'  => [
+                [
+                    'AttributeName' => 'id',
+                    'AttributeType' => 'S',
+                ],
+            ],
+            'KeySchema'             => [
+                [
+                    'AttributeName' => 'id',
+                    'KeyType'       => 'HASH',
+                ],
+            ],
+            'ProvisionedThroughput' => [
+                'ReadCapacityUnits'  => 10,
+                'WriteCapacityUnits' => 20,
+                'OnDemand'           => false,
+            ],
+        ],
+    ];
+
+
+If you don't want to use a configuration file, you may as well override the Create/DeleteTablesCommand and put your
+table definitions in the `protected static $tables = []` array to override the tables.
 
 Remember to add the overridden command in your `Kernel.php` file.
 
