@@ -117,7 +117,7 @@ abstract class DynamoDbModel extends Model
         // Initialize the client.
         if (static::$dynamoDb === null) {
             if ($dynamoDb === null) {
-                static::$dynamoDb = App::make('Nord\Lumen\DynamoDb\Contracts\DynamoDbClientInterface');
+                static::$dynamoDb = app('Nord\Lumen\DynamoDb\Contracts\DynamoDbClientInterface');
             } else {
                 static::$dynamoDb = $dynamoDb;
             }
