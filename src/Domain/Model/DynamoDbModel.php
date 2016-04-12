@@ -183,6 +183,10 @@ abstract class DynamoDbModel extends Model
             $this->fireModelEvent('creating');
         }
 
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
+
         try {
             $this->client->putItem([
                 'TableName' => $this->getTable(),
