@@ -261,6 +261,8 @@ abstract class DynamoDbModel extends Model
         $model->fill($item);
         // Set the model id field.
         $model->setId($id);
+        $model->exists = true;
+        $model->syncOriginal();
 
         return $model;
     }
@@ -451,6 +453,9 @@ abstract class DynamoDbModel extends Model
             $item  = $this->unmarshalItem($item);
             $model = new static($item, static::$dynamoDb);
             $model->setUnfillableAttributes($item);
+            $model->exists = true;
+            $model->syncOriginal();
+
             $results[] = $model;
         }
 
