@@ -191,7 +191,7 @@ abstract class DynamoDbModel extends Model
 
             return true;
         } catch (Exception $e) {
-            Log::info($e);
+            app('log')->info($e);
 
             return false;
         }
