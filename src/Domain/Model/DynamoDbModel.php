@@ -183,6 +183,10 @@ abstract class DynamoDbModel extends Model
             $this->fireModelEvent('creating');
         }
 
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
+
         try {
             $this->client->putItem([
                 'TableName' => $this->getTable(),
@@ -191,7 +195,7 @@ abstract class DynamoDbModel extends Model
 
             return true;
         } catch (Exception $e) {
-            Log::info($e);
+            app('log')->info($e);
 
             return false;
         }
@@ -261,6 +265,8 @@ abstract class DynamoDbModel extends Model
         $model->fill($item);
         // Set the model id field.
         $model->setId($id);
+        $model->exists = true;
+        $model->syncOriginal();
 
         return $model;
     }
@@ -451,6 +457,9 @@ abstract class DynamoDbModel extends Model
             $item  = $this->unmarshalItem($item);
             $model = new static($item, static::$dynamoDb);
             $model->setUnfillableAttributes($item);
+            $model->exists = true;
+            $model->syncOriginal();
+
             $results[] = $model;
         }
 
